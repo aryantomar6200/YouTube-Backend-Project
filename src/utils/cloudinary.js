@@ -17,21 +17,13 @@ const uploadOnCloudinary = async (localFilePath) => {
         })
 
         console.log("cloudinary file uploaded: uploadResult ", uploadResult);
-        return uploadResult
+        fs.unlinkSync(localFilePath) 
+        return uploadResult.url
         
     } catch (error) {
-        fs.unlink(localFilePath) //removing temp file from our server
+        fs.unlinkSync(localFilePath) //removing temp file from our server
         return null
     }
 }
 
-
-const uploadResult = await cloudinary.uploader
-       .upload(
-           'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
-               public_id: 'shoes',
-           }
-       )
-       .catch((error) => {
-           console.log(error);
-       });
+export {uploadOnCloudinary}
