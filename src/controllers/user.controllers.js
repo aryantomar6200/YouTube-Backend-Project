@@ -100,9 +100,8 @@ const login = asyncHandler(async (req, res) => {
   //access and refresh token
   //send cookies
   console.log(req.body);
-  
+
   const { email, username, password } = req.body;
-  
 
   if (username.trim() === "") {
     throw new ApiError(401, "Please enter a valid username");
@@ -159,4 +158,28 @@ const login = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, login };
+const logOut = asyncHandler(async (req, res) => {
+  //remove refresh toke from DB - created a middleware for
+  //remove cookies
+
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: { refreshToken: undefined },
+    },
+    { returnDocument: "after" },
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, "user logged out successfully"));
+});
+
+export { registerUser, login, logOut };
